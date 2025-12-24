@@ -308,50 +308,43 @@ cluster_info = {
 }
 
 # ===== HERO SECTION =====
-st.markdown(f"""
-<div class="hero-section">
-    <div class="hero-title">🔮 Sistem Prediksi Wisata Indonesia</div>
-    <div class="hero-subtitle">Prediksi Cluster & Rekomendasi Destinasi menggunakan Machine Learning (K-Means Clustering)</div>
-    
-    <div class="stats-container">
-        <div class="stat-card">
-            <span class="stat-number">{len(df)}</span>
-            <span class="stat-label">Data Wisata</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-number">4</span>
-            <span class="stat-label">Cluster</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-number">{df['City'].nunique()}</span>
-            <span class="stat-label">Kota</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-number">{df['Category'].nunique()}</span>
-            <span class="stat-label">Kategori</span>
-        </div>
-    </div>
-    
-    <div class="team-section">
-        <div class="team-title">👨‍💻 Oleh : Kelompok 4</div>
-        <ol class="team-list">
-            <li>Alfian Dimas Maulana (1462300019)</li>
-            <li>Zidan Alfarizan Nugraha (1462300029)</li>
-            <li>Raniah Aurellia Putri (1462300040)</li>
-            <li>Yahya Nur Nasywa H (1462300067)</li>
-            <li>Fajar Rizky Fathoni (1462300099)</li>
-        </ol>
-    </div>
+# Menggunakan komponen Streamlit yang lebih kompatibel
+st.markdown("""
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f64f59 100%); padding: 50px 30px; border-radius: 20px; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);">
+    <h1 style="color: white; font-size: 2.2rem; font-weight: 700; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">🔮 Sistem Prediksi Wisata Indonesia</h1>
+    <p style="color: rgba(255, 255, 255, 0.95); font-size: 1rem; margin-bottom: 20px;">Prediksi Cluster & Rekomendasi Destinasi menggunakan Machine Learning (K-Means Clustering)</p>
 </div>
 """, unsafe_allow_html=True)
 
+# Stats menggunakan columns Streamlit
+stat1, stat2, stat3, stat4 = st.columns(4)
+with stat1:
+    st.metric(label="📊 Data Wisata", value=len(df))
+with stat2:
+    st.metric(label="🎯 Cluster", value="4")
+with stat3:
+    st.metric(label="🏙️ Kota", value=df['City'].nunique())
+with stat4:
+    st.metric(label="🎭 Kategori", value=df['Category'].nunique())
+
+# Team Section
+with st.expander("👨‍💻 **Oleh : Kelompok 4**", expanded=True):
+    st.markdown("""
+    1. Alfian Dimas Maulana (1462300019)
+    2. Zidan Alfarizan Nugraha (1462300029)
+    3. Raniah Aurellia Putri (1462300040)
+    4. Yahya Nur Nasywa H (1462300067)
+    5. Fajar Rizky Fathoni (1462300099)
+    """)
+
 # ===== PREDICTION SECTION =====
-st.markdown('<div class="section-title">🎯 Silahkan Masukkan Data Anda</div>', unsafe_allow_html=True)
+st.markdown("---")
+st.markdown("## 🎯 Silahkan Masukkan Data Anda")
 
 col1, col2 = st.columns([1, 1], gap="large")
 
 with col1:
-    st.markdown('<div class="form-card">', unsafe_allow_html=True)
+    st.markdown("### 📝 Form Input")
     
     city = st.selectbox("🏙️ Kota Tujuan Wisata:", ["Jakarta", "Yogyakarta", "Bandung", "Semarang", "Surabaya"])
     
@@ -390,9 +383,7 @@ with col1:
     time_choice = st.selectbox("⏱️ Waktu Kunjungan yang Diinginkan:", list(time_options.keys()))
     time_minutes = time_options[time_choice]
     
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    predict_btn = st.button("🔮 Jalankan Prediksi & Rekomendasi", use_container_width=True)
+    predict_btn = st.button("🔮 Jalankan Prediksi & Rekomendasi", use_container_width=True, type="primary")
 
 # City coordinates
 city_coords = {
@@ -420,35 +411,25 @@ with col2:
         cluster_data = cluster_info.get(cluster, {"name": "Unknown", "desc": "", "color": "#999"})
         
         # Results
-        st.markdown('<div class="section-title">📊 Hasil Prediksi & Analisis</div>', unsafe_allow_html=True)
+        st.markdown("### 📊 Hasil Prediksi & Analisis")
         
-        # Result cards
+        # Result cards menggunakan Streamlit metrics
         r1, r2 = st.columns(2)
         with r1:
-            st.markdown(f"""
-            <div class="result-card">
-                <div class="result-title">🎯 Cluster Prediksi</div>
-                <div class="result-value">Cluster {cluster}</div>
-                <div style="margin-top: 10px; font-size: 0.9rem;">{cluster_data['name']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.success(f"### 🎯 Cluster {cluster}")
+            st.info(f"**{cluster_data['name']}**")
         
         with r2:
             # Hitung rata-rata rating cluster
             cluster_avg_rating = df[df['Cluster'] == cluster]['Rating'].mean()
             display_rating = cluster_avg_rating * (RATING_MAX - RATING_MIN) + RATING_MIN
-            st.markdown(f"""
-            <div class="result-card">
-                <div class="result-title">⭐ Rata-rata Rating Cluster</div>
-                <div class="result-value">{display_rating:.2f}</div>
-                <div style="margin-top: 10px; font-size: 0.9rem;">{cluster_data['desc']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.success(f"### ⭐ Rating: {display_rating:.2f}")
+            st.info(f"**{cluster_data['desc']}**")
         
         st.markdown("<br>", unsafe_allow_html=True)
         
         # Recommendations
-        st.markdown('<div class="section-title">🎁 Rekomendasi Destinasi Wisata</div>', unsafe_allow_html=True)
+        st.markdown("### 🎁 Rekomendasi Destinasi Wisata")
         
         # Filter by cluster, city, category, and budget
         recommendations = df[
@@ -471,36 +452,26 @@ with col2:
             original_price = place['Price'] * PRICE_MAX
             original_rating = place['Rating'] * (RATING_MAX - RATING_MIN) + RATING_MIN
             
-            st.markdown(f"""
-            <div class="rec-card">
-                <div class="rec-name">{place['Place_Name']}</div>
-                <div>
-                    <span class="rec-category">{place['Category']}</span>
-                    <span class="rec-city">📍 {place['City']}</span>
-                </div>
-                <div class="rec-details">
-                    <span class="rec-price">💰 Rp {original_price:,.0f}</span>
-                    <span class="rec-rating">⭐ {original_rating:.1f}</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            with st.container():
+                col_a, col_b = st.columns([4, 1])
+                with col_a:
+                    st.markdown(f"**🏝️ {place['Place_Name']}**")
+                    st.caption(f"📍 {place['City']} • 🎭 {place['Category']}")
+                with col_b:
+                    st.markdown(f"**⭐ {original_rating:.1f}**")
+                    st.caption(f"💰 Rp {original_price:,.0f}")
+                st.divider()
     else:
-        st.markdown("""
-        <div class="form-card" style="text-align: center; padding: 60px;">
-            <div style="font-size: 4rem; margin-bottom: 20px;">🔮</div>
-            <div style="font-size: 1.2rem; color: #667eea; font-weight: 600;">Hasil Prediksi akan muncul di sini</div>
-            <div style="color: #888; margin-top: 10px;">Silahkan isi form di sebelah kiri dan klik tombol Prediksi</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("👆 Silahkan isi form di sebelah kiri dan klik tombol **Prediksi** untuk melihat hasil")
 
 # ===== ANALYSIS SECTION =====
-st.markdown('<div class="section-title">📊 Analisis Dataset</div>', unsafe_allow_html=True)
+st.markdown("---")
+st.markdown("## 📊 Analisis Dataset")
 
 a1, a2 = st.columns(2)
 
 with a1:
-    st.markdown('<div class="analysis-card">', unsafe_allow_html=True)
-    st.markdown('<div class="analysis-title">📈 Statistik per Kategori</div>', unsafe_allow_html=True)
+    st.markdown("### 📈 Statistik per Kategori")
     
     cat_stats = df_original.groupby('Category').agg({
         'Place_Name': 'count',
@@ -511,11 +482,9 @@ with a1:
     cat_stats['Avg Harga'] = cat_stats['Avg Harga'].apply(lambda x: f"Rp {x:,.0f}")
     cat_stats['Avg Rating'] = cat_stats['Avg Rating'].apply(lambda x: f"{x:.2f}")
     st.dataframe(cat_stats, use_container_width=True, hide_index=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with a2:
-    st.markdown('<div class="analysis-card">', unsafe_allow_html=True)
-    st.markdown('<div class="analysis-title">🏙️ Statistik per Kota</div>', unsafe_allow_html=True)
+    st.markdown("### 🏙️ Statistik per Kota")
     
     city_stats = df_original.groupby('City').agg({
         'Place_Name': 'count',
@@ -526,10 +495,10 @@ with a2:
     city_stats['Avg Harga'] = city_stats['Avg Harga'].apply(lambda x: f"Rp {x:,.0f}")
     city_stats['Avg Rating'] = city_stats['Avg Rating'].apply(lambda x: f"{x:.2f}")
     st.dataframe(city_stats, use_container_width=True, hide_index=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # Cluster Statistics
-st.markdown('<div class="section-title">🎯 Statistik Cluster</div>', unsafe_allow_html=True)
+st.markdown("---")
+st.markdown("## 🎯 Statistik Cluster")
 
 c1, c2, c3, c4 = st.columns(4)
 cluster_cols = [c1, c2, c3, c4]
@@ -541,22 +510,16 @@ for i, col in enumerate(cluster_cols):
     avg_rating = cluster_df['Rating'].mean() * (RATING_MAX - RATING_MIN) + RATING_MIN
     
     with col:
-        st.markdown(f"""
-        <div class="result-card" style="background: {cluster_info[i]['color']};">
-            <div class="result-title">Cluster {i}</div>
-            <div class="result-value">{count}</div>
-            <div style="font-size: 0.85rem; margin-top: 10px;">
-                {cluster_info[i]['name']}<br>
-                Avg: Rp {avg_price:,.0f}<br>
-                ⭐ {avg_rating:.2f}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric(
+            label=f"Cluster {i}: {cluster_info[i]['name']}", 
+            value=f"{count} wisata",
+            delta=f"⭐ {avg_rating:.2f}"
+        )
+        st.caption(f"Avg: Rp {avg_price:,.0f}")
 
 # ===== DATA SECTION =====
-st.markdown('<div class="section-title">📁 Data Wisata</div>', unsafe_allow_html=True)
-
-st.markdown('<div class="analysis-card">', unsafe_allow_html=True)
+st.markdown("---")
+st.markdown("## 📁 Data Wisata")
 
 filter_col1, filter_col2, filter_col3 = st.columns(3)
 with filter_col1:
@@ -584,13 +547,13 @@ st.dataframe(
     hide_index=True
 )
 
-st.markdown(f"*Menampilkan {min(50, len(display_df))} dari {len(display_df)} data*", unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+st.caption(f"Menampilkan {min(50, len(display_df))} dari {len(display_df)} data")
 
 # Footer
+st.markdown("---")
 st.markdown("""
-<div style="text-align: center; padding: 40px; color: #888; margin-top: 40px;">
-    <p>🔮 Tourism Prediction System - Kelompok 4</p>
+<div style="text-align: center; padding: 20px; color: #888;">
+    <p>🔮 <strong>Tourism Prediction System</strong> - Kelompok 4</p>
     <p style="font-size: 0.8rem;">Powered by Machine Learning (K-Means Clustering) & Streamlit</p>
 </div>
 """, unsafe_allow_html=True)
