@@ -83,50 +83,54 @@ with col1:
     lat, long = city_coords[city]
     
     st.info(f"📍 Koordinat: Lat {lat}, Long {long}")
+    
+    predict_btn = st.button("🔮 Prediksi Cluster", type="primary", use_container_width=True)
 
 with col2:
     st.header("📊 Hasil Prediksi")
     
-    # Prediksi otomatis (tanpa perlu klik tombol)
-    # Normalisasi sesuai dengan cara training model (MinMaxScaler)
-    price_norm = price / PRICE_MAX if PRICE_MAX > 0 else 0
-    rating_norm = (rating - RATING_MIN) / (RATING_MAX - RATING_MIN) if (RATING_MAX - RATING_MIN) > 0 else 0
-    time_norm = (time_minutes - TIME_MIN) / (TIME_MAX - TIME_MIN) if (TIME_MAX - TIME_MIN) > 0 else 0
-    lat_norm = (lat - LAT_MIN) / (LAT_MAX - LAT_MIN) if (LAT_MAX - LAT_MIN) > 0 else 0
-    long_norm = (long - LONG_MIN) / (LONG_MAX - LONG_MIN) if (LONG_MAX - LONG_MIN) > 0 else 0
-    
-    # Predict
-    features = np.array([[price_norm, rating_norm, time_norm, lat_norm, long_norm]])
-    cluster = kmeans_model.predict(features)[0]
-    
-    # Display debug info
-    with st.expander("🔍 Debug - Nilai Normalisasi"):
-        st.write(f"Price: {price} → {price_norm:.4f}")
-        st.write(f"Rating: {rating} → {rating_norm:.4f}")
-        st.write(f"Time: {time_minutes} → {time_norm:.4f}")
-        st.write(f"Lat: {lat} → {lat_norm:.4f}")
-        st.write(f"Long: {long} → {long_norm:.4f}")
-    
-    # Display result
-    st.success(f"### Cluster: {cluster}")
-    st.info(cluster_descriptions.get(cluster, "Unknown"))
-    
-    # Similar places
-    st.subheader("🎁 Rekomendasi Wisata Serupa:")
-    similar = df[df['Cluster'] == cluster][['Place_Name', 'Category', 'City', 'Price', 'Rating']].head(5)
-    
-    for _, place in similar.iterrows():
-        with st.container():
-            c1, c2 = st.columns([3, 1])
-            with c1:
-                st.markdown(f"**{place['Place_Name']}**")
-                # Denormalisasi price untuk tampilan
-                original_price = place['Price'] * PRICE_MAX
-                st.caption(f"{place['Category']} • {place['City']} • Rp {original_price:,.0f}")
-            with c2:
-                original_rating = place['Rating'] * (RATING_MAX - RATING_MIN) + RATING_MIN
-                st.markdown(f"⭐ **{original_rating:.1f}**")
-            st.divider()
+    if predict_btn:
+        # Normalisasi sesuai dengan cara training model (MinMaxScaler)
+        price_norm = price / PRICE_MAX if PRICE_MAX > 0 else 0
+        rating_norm = (rating - RATING_MIN) / (RATING_MAX - RATING_MIN) if (RATING_MAX - RATING_MIN) > 0 else 0
+        time_norm = (time_minutes - TIME_MIN) / (TIME_MAX - TIME_MIN) if (TIME_MAX - TIME_MIN) > 0 else 0
+        lat_norm = (lat - LAT_MIN) / (LAT_MAX - LAT_MIN) if (LAT_MAX - LAT_MIN) > 0 else 0
+        long_norm = (long - LONG_MIN) / (LONG_MAX - LONG_MIN) if (LONG_MAX - LONG_MIN) > 0 else 0
+        
+        # Predict
+        features = np.array([[price_norm, rating_norm, time_norm, lat_norm, long_norm]])
+        cluster = kmeans_model.predict(features)[0]
+        
+        # Display debug info
+        with st.expander("🔍 Debug - Nilai Normalisasi"):
+            st.write(f"Price: {price} → {price_norm:.4f}")
+            st.write(f"Rating: {rating} → {rating_norm:.4f}")
+            st.write(f"Time: {time_minutes} → {time_norm:.4f}")
+            st.write(f"Lat: {lat} → {lat_norm:.4f}")
+            st.write(f"Long: {long} → {long_norm:.4f}")
+        
+        # Display result
+        st.success(f"### Cluster: {cluster}")
+        st.info(cluster_descriptions.get(cluster, "Unknown"))
+        
+        # Similar places
+        st.subheader("🎁 Rekomendasi Wisata Serupa:")
+        similar = df[df['Cluster'] == cluster][['Place_Name', 'Category', 'City', 'Price', 'Rating']].head(5)
+        
+        for _, place in similar.iterrows():
+            with st.container():
+                c1, c2 = st.columns([3, 1])
+                with c1:
+                    st.markdown(f"**{place['Place_Name']}**")
+                    # Denormalisasi price untuk tampilan
+                    original_price = place['Price'] * PRICE_MAX
+                    st.caption(f"{place['Category']} • {place['City']} • Rp {original_price:,.0f}")
+                with c2:
+                    original_rating = place['Rating'] * (RATING_MAX - RATING_MIN) + RATING_MIN
+                    st.markdown(f"⭐ **{original_rating:.1f}**")
+                st.divider()
+    else:
+        st.info("👆 Masukkan data dan klik tombol **Prediksi Cluster**")
 
 # Data Explorer
 st.markdown("---")
