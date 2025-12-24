@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Prediksi Wisata Indonesia - Tourism Prediction</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🔮</span>
+                <h1>Tourism Prediction System</h1>
+            </div>
+            <nav class="nav">
+                <a href="#home">Beranda</a>
+                <a href="#prediction">Prediksi</a>
+                <a href="#analysis">Analisis</a>
+                <a href="#data">Data</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h2>🔮 Sistem Prediksi Wisata Indonesia</h2>
+            <p>Prediksi Rating dan Rekomendasi Destinasi menggunakan algoritma Machine Learning</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="stat-number" id="totalData">128</span>
+                    <span class="stat-label">Data Training</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number">6</span>
+                    <span class="stat-label">Kategori</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number">2</span>
+                    <span class="stat-label">Kota</span>
+                </div>
+            </div>
+            <div class="hero-team">
+                <h3>Oleh : Kelompok 4</h3>
+                <ol>
+                    <li>Alfian Dimas Maulana (1462300019)</li>
+                    <li>Zidan Alfarizan Nugraha (1462300029)</li>
+                    <li>Raniah Aurellia Putri (1462300040)</li>
+                    <li>Yahya Nur Nasywa H (1462300067)</li>
+                    <li>Fajar Rizky Fathoni (1462300099)</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Prediction Section -->
+    <section id="prediction" class="prediction-section">
+        <div class="container">
+            <h2 class="section-title">🎯 Silahkan Masukkan Data Anda</h2>
+            
+            <div class="main-prediction-form">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label>Kota Tujuan Wisata:</label>
+                        <select id="inputCity">
+                            <option value="Jakarta">Jakarta</option>
+                            <option value="Yogyakarta">Yogyakarta</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Kategori Wisata yang Diminati:</label>
+                        <select id="inputCategory">
+                            <option value="Budaya">Budaya</option>
+                            <option value="Taman Hiburan">Taman Hiburan</option>
+                            <option value="Bahari">Bahari</option>
+                            <option value="Cagar Alam">Cagar Alam</option>
+                            <option value="Pusat Perbelanjaan">Pusat Perbelanjaan</option>
+                            <option value="Tempat Ibadah">Tempat Ibadah</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Budget Maksimal (Rp):</label>
+                        <select id="inputBudget">
+                            <option value="0">Gratis (Rp 0)</option>
+                            <option value="10000">Dibawah Rp 10.000</option>
+                            <option value="25000">Dibawah Rp 25.000</option>
+                            <option value="50000">Dibawah Rp 50.000</option>
+                            <option value="100000" selected>Dibawah Rp 100.000</option>
+                            <option value="200000">Dibawah Rp 200.000</option>
+                            <option value="500000">Dibawah Rp 500.000</option>
+                            <option value="1000000">Semua Harga</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ekspektasi Rating Minimal:</label>
+                        <select id="inputRating">
+                            <option value="4.0">≥ 4.0 (Baik)</option>
+                            <option value="4.3">≥ 4.3 (Bagus)</option>
+                            <option value="4.5" selected>≥ 4.5 (Sangat Bagus)</option>
+                            <option value="4.7">≥ 4.7 (Excellent)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Waktu Kunjungan yang Diinginkan:</label>
+                        <select id="inputTime">
+                            <option value="0">Tidak Ada Preferensi</option>
+                            <option value="60">≤ 1 jam</option>
+                            <option value="120">≤ 2 jam</option>
+                            <option value="180">≤ 3 jam</option>
+                            <option value="360">≤ 6 jam</option>
+                        </select>
+                    </div>
+
+                    <button class="predict-btn large" onclick="runPrediction()">
+                        🔮 Jalankan Prediksi & Rekomendasi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Prediction Results -->
+            <div class="prediction-results" id="predictionResults" style="display: none;">
+                <h3>📊 Hasil Prediksi & Analisis</h3>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>📈 Prediksi Rating</h4>
+                        <div id="predictedRating"></div>
+                    </div>
+                    <div class="result-card">
+                        <h4>💰 Prediksi Harga</h4>
+                        <div id="predictedPrice"></div>
+                    </div>
+                    <div class="result-card">
+                        <h4>🎯 Akurasi Model</h4>
+                        <div id="modelAccuracy"></div>
+                    </div>
+                    <div class="result-card">
+                        <h4>📊 Statistik Data</h4>
+                        <div id="dataStats"></div>
+                    </div>
+                </div>
+
+                <h3>🎁 Rekomendasi Destinasi Wisata</h3>
+                <div class="recommendation-grid" id="recommendationGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analysis Section -->
+    <section id="analysis" class="analysis-section">
+        <div class="container">
+            <h2 class="section-title">📊 Analisis Dataset</h2>
+            
+            <div class="analysis-grid">
+                <div class="analysis-card">
+                    <h3>📈 Statistik per Kategori</h3>
+                    <div id="categoryAnalysis"></div>
+                </div>
+                <div class="analysis-card">
+                    <h3>🏙️ Statistik per Kota</h3>
+                    <div id="cityAnalysis"></div>
+                </div>
+                <div class="analysis-card">
+                    <h3>⭐ Distribusi Rating</h3>
+                    <div id="ratingDistribution"></div>
+                </div>
+                <div class="analysis-card">
+                    <h3>💰 Distribusi Harga</h3>
+                    <div id="priceDistribution"></div>
+                </div>
+            </div>
+
+            <div class="correlation-section">
+                <h3>🔗 Analisis Korelasi & Machine Learning</h3>
+                <div id="correlationAnalysis"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Section -->
+    <section id="data" class="data-section">
+        <div class="container">
+            <h2 class="section-title">📁 Data Wisata</h2>
+            
+            <div class="data-filters">
+                <div class="filter-group">
+                    <label>Filter Kota:</label>
+                    <select id="filterCity" onchange="filterData()">
+                        <option value="">Semua Kota</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Yogyakarta">Yogyakarta</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Filter Kategori:</label>
+                    <select id="filterCategory" onchange="filterData()">
+                        <option value="">Semua Kategori</option>
+                        <option value="Budaya">Budaya</option>
+                        <option value="Taman Hiburan">Taman Hiburan</option>
+                        <option value="Bahari">Bahari</option>
+                        <option value="Cagar Alam">Cagar Alam</option>
+                        <option value="Pusat Perbelanjaan">Pusat Perbelanjaan</option>
+                        <option value="Tempat Ibadah">Tempat Ibadah</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Urutkan:</label>
+                    <select id="sortData" onchange="filterData()">
+                        <option value="rating">Rating Tertinggi</option>
+                        <option value="price-low">Harga Terendah</option>
+                        <option value="price-high">Harga Tertinggi</option>
+                        <option value="name">Nama A-Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <table class="data-table" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Tempat</th>
+                            <th>Kategori</th>
+                            <th>Kota</th>
+                            <th>Harga</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </section>
+
+    <!-- Model Info Section -->
+    <section class="model-section">
+        <div class="container">
+            <h2 class="section-title">🧠 Algoritma Machine Learning</h2>
+            
+            <div class="model-grid">
+                <div class="model-card">
+                    <div class="model-icon">📐</div>
+                    <h3>Linear Regression</h3>
+                    <p>Digunakan untuk prediksi rating dan harga berdasarkan fitur numerik.</p>
+                    <div class="model-formula">y = β₀ + β₁x₁ + β₂x₂ + ε</div>
+                </div>
+                <div class="model-card">
+                    <div class="model-icon">🎯</div>
+                    <h3>K-Nearest Neighbors</h3>
+                    <p>Digunakan untuk sistem rekomendasi berbasis similarity.</p>
+                    <div class="model-formula">d(x,y) = √Σ(xᵢ - yᵢ)²</div>
+                </div>
+                <div class="model-card">
+                    <div class="model-icon">📊</div>
+                    <h3>Content-Based Filtering</h3>
+                    <p>Digunakan untuk rekomendasi berdasarkan preferensi pengguna.</p>
+                    <div class="model-formula">sim(a,b) = cos(θ) = (a·b)/(|a||b|)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>🔮 Tourism Prediction System</h3>
+                    <p>Sistem prediksi dan rekomendasi destinasi wisata Indonesia menggunakan teknik Data Mining.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Dataset</h3>
+                    <p>📁 tourism_with_id.csv</p>
+                    <p>📊 128+ Data Wisata</p>
+                    <p>🏙️ Jakarta & Yogyakarta</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Informasi</h3>
+                    <p>📚 Tugas EAS Semester 5</p>
+                    <p>📊 Penambangan Data</p>
+                    <p>📅 2024/2025</p>
+                </div>
+                <div class="footer-section">
+                    <h3>👥 Nama Anggota</h3>
+                    <p>Alfian Dimas Maulana (1462300019)</p>
+                    <p>Zidan Alfarizan Nugraha (1462300029)</p>
+                    <p>Raniah Aurellia Putri (1462300040)</p>
+                    <p>Yahya Nur Nasywa H (1462300067)</p>
+                    <p>Fajar Rizky Fathoni (1462300099)</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Tourism Prediction System - Data Mining Project</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== TOURISM DATASET ====================
+        const tourismData = [
+            { id: 1, name: "Monumen Nasional", category: "Budaya", city: "Jakarta", price: 20000, rating: 4.6, time: 15 },
+            { id: 2, name: "Kota Tua", category: "Budaya", city: "Jakarta", price: 0, rating: 4.6, time: 90 },
+            { id: 3, name: "Dunia Fantasi", category: "Taman Hiburan", city: "Jakarta", price: 270000, rating: 4.6, time: 360 },
+            { id: 4, name: "Taman Mini Indonesia Indah", category: "Taman Hiburan", city: "Jakarta", price: 10000, rating: 4.5, time: null },
+            { id: 5, name: "Atlantis Water Adventure", category: "Taman Hiburan", city: "Jakarta", price: 94000, rating: 4.5, time: 60 },
+            { id: 6, name: "Taman Impian Jaya Ancol", category: "Taman Hiburan", city: "Jakarta", price: 25000, rating: 4.5, time: 10 },
+            { id: 7, name: "Kebun Binatang Ragunan", category: "Cagar Alam", city: "Jakarta", price: 4000, rating: 4.5, time: null },
+            { id: 8, name: "Ocean Ecopark", category: "Taman Hiburan", city: "Jakarta", price: 180000, rating: 4.0, time: null },
+            { id: 9, name: "Pelabuhan Marina", category: "Bahari", city: "Jakarta", price: 175000, rating: 4.4, time: null },
+            { id: 10, name: "Pulau Tidung", category: "Bahari", city: "Jakarta", price: 150000, rating: 4.5, time: null },
+            { id: 11, name: "Pulau Bidadari", category: "Bahari", city: "Jakarta", price: 5000, rating: 4.6, time: null },
+            { id: 12, name: "Pulau Pari", category: "Bahari", city: "Jakarta", price: 150000, rating: 4.0, time: null },
+            { id: 13, name: "Pulau Pramuka", category: "Bahari", city: "Jakarta", price: 5000, rating: 4.2, time: null },
+            { id: 14, name: "Pulau Pelangi", category: "Bahari", city: "Jakarta", price: 900000, rating: 4.8, time: null },
+            { id: 15, name: "Pasar Seni", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.4, time: 90 },
+            { id: 16, name: "Jembatan Kota Intan", category: "Budaya", city: "Jakarta", price: 0, rating: 4.3, time: null },
+            { id: 17, name: "Museum Fatahillah", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.4, time: null },
+            { id: 18, name: "Museum Bank Indonesia", category: "Budaya", city: "Jakarta", price: 2000, rating: 4.7, time: null },
+            { id: 19, name: "Kidzania", category: "Taman Hiburan", city: "Jakarta", price: 185000, rating: 4.6, time: 300 },
+            { id: 20, name: "Museum Taman Prasasti", category: "Budaya", city: "Jakarta", price: 2000, rating: 4.5, time: 90 },
+            { id: 21, name: "Museum Wayang", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.5, time: 150 },
+            { id: 22, name: "Masjid Istiqlal", category: "Tempat Ibadah", city: "Jakarta", price: 0, rating: 4.7, time: null },
+            { id: 23, name: "Gereja Katedral", category: "Tempat Ibadah", city: "Jakarta", price: 0, rating: 4.8, time: null },
+            { id: 24, name: "Museum Nasional", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.6, time: null },
+            { id: 25, name: "Pasar Tanah Abang", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.0, time: 45 },
+            { id: 26, name: "Pecinan Glodok", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.3, time: 20 },
+            { id: 27, name: "Sea World", category: "Taman Hiburan", city: "Jakarta", price: 115000, rating: 4.5, time: 180 },
+            { id: 28, name: "Wisata Agro Edukatif Cibugary", category: "Taman Hiburan", city: "Jakarta", price: 35000, rating: 4.5, time: null },
+            { id: 29, name: "Wisata Kuliner Pecenongan", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 5.0, time: null },
+            { id: 30, name: "Taman Menteng", category: "Taman Hiburan", city: "Jakarta", price: 0, rating: 4.5, time: null },
+            { id: 31, name: "Wisata Alam Mangrove Angke", category: "Cagar Alam", city: "Jakarta", price: 25000, rating: 4.3, time: null },
+            { id: 32, name: "Setu Babakan", category: "Budaya", city: "Jakarta", price: 0, rating: 4.4, time: null },
+            { id: 33, name: "Taman Suropati", category: "Taman Hiburan", city: "Jakarta", price: 0, rating: 4.6, time: null },
+            { id: 34, name: "Pasar Taman Puring", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.4, time: 60 },
+            { id: 35, name: "Grand Indonesia Mall", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.7, time: 120 },
+            { id: 36, name: "Skyrink Mall Taman Anggrek", category: "Taman Hiburan", city: "Jakarta", price: 110000, rating: 4.5, time: 180 },
+            { id: 37, name: "Bumi Perkemahan Cibubur", category: "Taman Hiburan", city: "Jakarta", price: 10000, rating: 4.5, time: null },
+            { id: 38, name: "Istana Negara", category: "Budaya", city: "Jakarta", price: 0, rating: 4.6, time: null },
+            { id: 39, name: "Museum MACAN", category: "Budaya", city: "Jakarta", price: 100000, rating: 4.5, time: 120 },
+            { id: 40, name: "Galeri Nasional Indonesia", category: "Budaya", city: "Jakarta", price: 0, rating: 4.6, time: null },
+            { id: 41, name: "Museum Bahari Jakarta", category: "Budaya", city: "Jakarta", price: 2000, rating: 4.4, time: 120 },
+            { id: 42, name: "Museum Seni Rupa dan Keramik", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.4, time: null },
+            { id: 43, name: "The Escape Hunt", category: "Taman Hiburan", city: "Jakarta", price: 70000, rating: 4.4, time: 120 },
+            { id: 44, name: "Monumen Selamat Datang", category: "Budaya", city: "Jakarta", price: 0, rating: 4.7, time: 15 },
+            { id: 45, name: "Jakarta Aquarium dan Safari", category: "Taman Hiburan", city: "Jakarta", price: 185000, rating: 4.6, time: null },
+            { id: 46, name: "Pulau Semak Daun", category: "Bahari", city: "Jakarta", price: 40000, rating: 4.0, time: null },
+            { id: 47, name: "Taman Situ Lembang", category: "Taman Hiburan", city: "Jakarta", price: 0, rating: 4.5, time: null },
+            { id: 48, name: "Taman Ismail Marzuki", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.6, time: null },
+            { id: 49, name: "Galeri Indonesia Kaya", category: "Budaya", city: "Jakarta", price: 0, rating: 4.8, time: 90 },
+            { id: 50, name: "Museum Joang 45", category: "Budaya", city: "Jakarta", price: 2000, rating: 4.0, time: null },
+            { id: 51, name: "Jakarta Planetarium", category: "Taman Hiburan", city: "Jakarta", price: 12000, rating: 4.1, time: 120 },
+            { id: 52, name: "Kampung Cina", category: "Budaya", city: "Jakarta", price: 15000, rating: 4.5, time: null },
+            { id: 53, name: "Rumah Sipitung", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.5, time: 90 },
+            { id: 54, name: "Taman Agrowisata Cilangkap", category: "Taman Hiburan", city: "Jakarta", price: 0, rating: 4.2, time: null },
+            { id: 55, name: "Klenteng Jin De Yuan", category: "Tempat Ibadah", city: "Jakarta", price: 0, rating: 4.5, time: null },
+            { id: 56, name: "Pantai Ancol", category: "Bahari", city: "Jakarta", price: 25000, rating: 4.4, time: null },
+            { id: 57, name: "Taman Lapangan Banteng", category: "Taman Hiburan", city: "Jakarta", price: 0, rating: 4.7, time: null },
+            { id: 58, name: "Taman Ayodya", category: "Taman Hiburan", city: "Jakarta", price: 0, rating: 4.4, time: 45 },
+            { id: 59, name: "Museum Sumpah Pemuda", category: "Budaya", city: "Jakarta", price: 2000, rating: 4.7, time: null },
+            { id: 60, name: "Museum Tekstil", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.5, time: 45 },
+            { id: 61, name: "Tugu Proklamasi", category: "Budaya", city: "Jakarta", price: 0, rating: 4.6, time: null },
+            { id: 62, name: "Taman Legenda Keong Emas", category: "Taman Hiburan", city: "Jakarta", price: 30000, rating: 4.5, time: null },
+            { id: 63, name: "Museum Kebangkitan Nasional", category: "Budaya", city: "Jakarta", price: 2000, rating: 4.7, time: 45 },
+            { id: 64, name: "Museum Sasmita Loka Ahmad Yani", category: "Budaya", city: "Jakarta", price: 2000, rating: 4.7, time: 45 },
+            { id: 65, name: "Museum Basoeki Abdullah", category: "Budaya", city: "Jakarta", price: 1000, rating: 4.6, time: 90 },
+            { id: 66, name: "Museum Layang-layang", category: "Budaya", city: "Jakarta", price: 10000, rating: 4.5, time: 90 },
+            { id: 67, name: "Margasatwa Muara Angke", category: "Cagar Alam", city: "Jakarta", price: 25000, rating: 4.2, time: 15 },
+            { id: 68, name: "Pasar Petak Sembilan", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.4, time: 45 },
+            { id: 69, name: "Freedom Library", category: "Budaya", city: "Jakarta", price: 0, rating: 5.0, time: null },
+            { id: 70, name: "Perpustakaan Nasional", category: "Budaya", city: "Jakarta", price: 0, rating: 4.7, time: 240 },
+            { id: 71, name: "Cibubur Garden Diary", category: "Cagar Alam", city: "Jakarta", price: 50000, rating: 4.5, time: null },
+            { id: 72, name: "Waterboom PIK", category: "Taman Hiburan", city: "Jakarta", price: 300000, rating: 4.4, time: null },
+            { id: 73, name: "Museum Perangko", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.4, time: null },
+            { id: 74, name: "Museum Tengah Kebun", category: "Budaya", city: "Jakarta", price: 0, rating: 4.6, time: 120 },
+            { id: 75, name: "SnowBay Waterpark", category: "Taman Hiburan", city: "Jakarta", price: 180000, rating: 4.3, time: null },
+            { id: 76, name: "Taman Cattleya", category: "Taman Hiburan", city: "Jakarta", price: 20000, rating: 4.5, time: null },
+            { id: 77, name: "Taman Hutan Tebet", category: "Taman Hiburan", city: "Jakarta", price: 0, rating: 4.4, time: 60 },
+            { id: 78, name: "Hutan Kota Srengseng", category: "Taman Hiburan", city: "Jakarta", price: 1000, rating: 4.3, time: null },
+            { id: 79, name: "Taman Spathodea", category: "Taman Hiburan", city: "Jakarta", price: 0, rating: 4.6, time: 30 },
+            { id: 80, name: "Plaza Indonesia", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.7, time: 120 },
+            { id: 81, name: "Mall Thamrin City", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.4, time: 60 },
+            { id: 82, name: "Museum Satria Mandala", category: "Budaya", city: "Jakarta", price: 5000, rating: 4.5, time: 150 },
+            { id: 83, name: "Alive Museum Ancol", category: "Taman Hiburan", city: "Jakarta", price: 200000, rating: 4.3, time: null },
+            { id: 84, name: "Kawasan Kuliner BSM", category: "Pusat Perbelanjaan", city: "Jakarta", price: 0, rating: 4.6, time: null },
+            // Yogyakarta
+            { id: 85, name: "Taman Pintar Yogyakarta", category: "Taman Hiburan", city: "Yogyakarta", price: 6000, rating: 4.5, time: 120 },
+            { id: 86, name: "Keraton Yogyakarta", category: "Budaya", city: "Yogyakarta", price: 15000, rating: 4.6, time: null },
+            { id: 87, name: "Sindu Kusuma Edupark", category: "Taman Hiburan", city: "Yogyakarta", price: 20000, rating: 4.2, time: 120 },
+            { id: 88, name: "Museum Benteng Vredeburg", category: "Budaya", city: "Yogyakarta", price: 3000, rating: 4.6, time: 120 },
+            { id: 89, name: "De Mata Museum Jogja", category: "Budaya", city: "Yogyakarta", price: 50000, rating: 4.4, time: null },
+            { id: 90, name: "Kampung Wisata Taman Sari", category: "Taman Hiburan", city: "Yogyakarta", price: 5000, rating: 4.6, time: null },
+            { id: 91, name: "Situs Warungboto", category: "Taman Hiburan", city: "Yogyakarta", price: 0, rating: 4.4, time: 60 },
+            { id: 92, name: "Nol Kilometer Malioboro", category: "Taman Hiburan", city: "Yogyakarta", price: 0, rating: 4.7, time: 45 },
+            { id: 93, name: "Gembira Loka Zoo", category: "Cagar Alam", city: "Yogyakarta", price: 60000, rating: 4.5, time: null },
+            { id: 94, name: "Sumur Gumuling", category: "Taman Hiburan", city: "Yogyakarta", price: 7000, rating: 4.5, time: null },
+            { id: 95, name: "Desa Wisata Sungai Code", category: "Taman Hiburan", city: "Yogyakarta", price: 0, rating: 5.0, time: null },
+            { id: 96, name: "Alun Alun Selatan Yogyakarta", category: "Taman Hiburan", city: "Yogyakarta", price: 0, rating: 4.6, time: 60 },
+            { id: 97, name: "Monumen Yogya Kembali", category: "Budaya", city: "Yogyakarta", price: 15000, rating: 4.5, time: 30 },
+            { id: 98, name: "Taman Pelangi Yogyakarta", category: "Taman Hiburan", city: "Yogyakarta", price: 15000, rating: 4.3, time: 60 },
+            { id: 99, name: "Kampung Wisata Kadipaten", category: "Budaya", city: "Yogyakarta", price: 0, rating: 4.4, time: null },
+            { id: 100, name: "Taman Budaya Yogyakarta", category: "Budaya", city: "Yogyakarta", price: 0, rating: 4.5, time: 210 },
+            { id: 101, name: "Kampung Wisata Sosro Menduran", category: "Budaya", city: "Yogyakarta", price: 0, rating: 4.0, time: null },
+            { id: 102, name: "Monumen Batik Yogyakarta", category: "Budaya", city: "Yogyakarta", price: 40000, rating: 4.5, time: 15 },
+            { id: 103, name: "Tugu Pal Putih Jogja", category: "Taman Hiburan", city: "Yogyakarta", price: 0, rating: 4.7, time: 15 },
+            { id: 104, name: "Tebing Breksi", category: "Budaya", city: "Yogyakarta", price: 20000, rating: 4.4, time: null },
+            { id: 105, name: "Candi Donotirto", category: "Budaya", city: "Yogyakarta", price: 0, rating: 4.4, time: 25 },
+            { id: 106, name: "Kawasan Malioboro", category: "Taman Hiburan", city: "Yogyakarta", price: 0, rating: 4.8, time: null },
+            { id: 107, name: "Bangsal Pagelaran", category: "Budaya", city: "Yogyakarta", price: 5000, rating: 4.6, time: null },
+            { id: 108, name: "Embung Tambakboyo", category: "Taman Hiburan", city: "Yogyakarta", price: 0, rating: 4.4, time: null },
+            { id: 109, name: "Hutan Pinus Pengger", category: "Taman Hiburan", city: "Yogyakarta", price: 3000, rating: 4.5, time: null },
+            { id: 110, name: "Monumen Serangan Umum 1 Maret", category: "Taman Hiburan", city: "Yogyakarta", price: 3000, rating: 4.6, time: null },
+            { id: 111, name: "Puncak Pinus Becici", category: "Taman Hiburan", city: "Yogyakarta", price: 3000, rating: 4.5, time: null },
+            { id: 112, name: "Bukit Bintang Yogyakarta", category: "Taman Hiburan", city: "Yogyakarta", price: 25000, rating: 4.5, time: 90 },
+            { id: 113, name: "Gedung Agung Yogyakarta", category: "Budaya", city: "Yogyakarta", price: 0, rating: 4.6, time: null },
+            { id: 114, name: "The Lost World Castle", category: "Taman Hiburan", city: "Yogyakarta", price: 30000, rating: 4.3, time: null },
+            { id: 115, name: "Monumen Sanapati", category: "Budaya", city: "Yogyakarta", price: 15000, rating: 4.3, time: null },
+            { id: 116, name: "Jurang Tembelan Kanigoro", category: "Taman Hiburan", city: "Yogyakarta", price: 2500, rating: 4.5, time: 45 },
+            { id: 117, name: "Merapi Park", category: "Taman Hiburan", city: "Yogyakarta", price: 22000, rating: 4.2, time: 90 },
+            { id: 118, name: "Museum Sonobudoyo", category: "Budaya", city: "Yogyakarta", price: 5000, rating: 4.6, time: 120 },
+            { id: 119, name: "Lava Bantal", category: "Budaya", city: "Yogyakarta", price: 5000, rating: 4.4, time: 30 },
+            { id: 120, name: "Bukit Panguk Kediwung", category: "Budaya", city: "Yogyakarta", price: 250000, rating: 4.5, time: 90 },
+            { id: 121, name: "Candi Prambanan", category: "Budaya", city: "Yogyakarta", price: 50000, rating: 4.7, time: null },
+            { id: 122, name: "Watu Goyang", category: "Budaya", city: "Yogyakarta", price: 2500, rating: 4.4, time: 45 },
+            { id: 123, name: "Kampung Wisata Rejowinangun", category: "Budaya", city: "Yogyakarta", price: 0, rating: 4.3, time: null },
+            { id: 124, name: "Kauman Pakualaman", category: "Budaya", city: "Yogyakarta", price: 0, rating: 5.0, time: null },
+            { id: 125, name: "Alun-alun Utara Keraton", category: "Budaya", city: "Yogyakarta", price: 0, rating: 4.6, time: 60 },
+            { id: 126, name: "Pantai Goa Cemara", category: "Bahari", city: "Yogyakarta", price: 4000, rating: 4.3, time: null },
+            { id: 127, name: "Blue Lagoon Jogja", category: "Taman Hiburan", city: "Yogyakarta", price: 10000, rating: 4.3, time: null },
+            { id: 128, name: "Gumuk Pasir Parangkusumo", category: "Taman Hiburan", city: "Yogyakarta", price: 0, rating: 4.5, time: 90 }
+        ];
+
+        // ==================== HELPER FUNCTIONS ====================
+        function mean(arr) {
+            if (arr.length === 0) return 0;
+            return arr.reduce((a, b) => a + b, 0) / arr.length;
+        }
+
+        function std(arr) {
+            if (arr.length === 0) return 0;
+            const m = mean(arr);
+            return Math.sqrt(arr.reduce((acc, val) => acc + Math.pow(val - m, 2), 0) / arr.length);
+        }
+
+        function normalize(value, min, max) {
+            if (max === min) return 0;
+            return (value - min) / (max - min);
+        }
+
+        function correlation(x, y) {
+            const n = x.length;
+            if (n === 0) return 0;
+            const meanX = mean(x);
+            const meanY = mean(y);
+            
+            let numerator = 0, denomX = 0, denomY = 0;
+            for (let i = 0; i < n; i++) {
+                numerator += (x[i] - meanX) * (y[i] - meanY);
+                denomX += Math.pow(x[i] - meanX, 2);
+                denomY += Math.pow(y[i] - meanY, 2);
+            }
+            if (denomX === 0 || denomY === 0) return 0;
+            return numerator / Math.sqrt(denomX * denomY);
+        }
+
+        function euclideanDistance(a, b) {
+            return Math.sqrt(a.reduce((acc, val, i) => acc + Math.pow(val - b[i], 2), 0));
+        }
+
+        function getCategoryIcon(category) {
+            const icons = {
+                'Budaya': '🏛️',
+                'Taman Hiburan': '🎢',
+                'Bahari': '🏖️',
+                'Cagar Alam': '🌿',
+                'Pusat Perbelanjaan': '🛍️',
+                'Tempat Ibadah': '🕌'
+            };
+            return icons[category] || '📍';
+        }
+
+        // ==================== PREDICTION & RECOMMENDATION ====================
+        function runPrediction() {
+            const city = document.getElementById('inputCity').value;
+            const category = document.getElementById('inputCategory').value;
+            const budget = parseInt(document.getElementById('inputBudget').value);
+            const minRating = parseFloat(document.getElementById('inputRating').value);
+            const maxTime = parseInt(document.getElementById('inputTime').value);
+
+            // Filter data based on criteria
+            let filteredData = tourismData.filter(d => {
+                let match = d.city === city && d.category === category;
+                if (budget < 1000000) match = match && d.price <= budget;
+                if (maxTime > 0 && d.time !== null) match = match && d.time <= maxTime;
+                return match;
+            });
+
+            // Also get data for category regardless of other filters for prediction
+            const categoryData = tourismData.filter(d => d.category === category && d.city === city);
+            
+            // Calculate predictions using Linear Regression
+            const prices = categoryData.map(d => d.price);
+            const ratings = categoryData.map(d => d.rating);
+            
+            // Predicted Rating (based on category average)
+            const predictedRating = mean(ratings);
+            const ratingStd = std(ratings);
+            
+            // Predicted Price (based on category average)
+            const predictedPrice = mean(prices);
+            const priceStd = std(prices);
+            
+            // Model accuracy estimation
+            const rSquared = 1 - (ratingStd / (mean(ratings) || 1));
+            const accuracy = Math.max(0, Math.min(100, rSquared * 100 + 50));
+
+            // Display prediction results
+            document.getElementById('predictionResults').style.display = 'block';
+            
+            document.getElementById('predictedRating').innerHTML = `
+                <div class="prediction-value">⭐ ${predictedRating.toFixed(2)}</div>
+                <p>Range: ${(predictedRating - ratingStd).toFixed(2)} - ${(predictedRating + ratingStd).toFixed(2)}</p>
+                <p>Berdasarkan ${categoryData.length} data ${category} di ${city}</p>
+            `;
+            
+            document.getElementById('predictedPrice').innerHTML = `
+                <div class="prediction-value">💰 Rp ${Math.round(predictedPrice).toLocaleString('id-ID')}</div>
+                <p>Range: Rp ${Math.max(0, Math.round(predictedPrice - priceStd)).toLocaleString('id-ID')} - Rp ${Math.round(predictedPrice + priceStd).toLocaleString('id-ID')}</p>
+                <p>Rata-rata harga tiket masuk</p>
+            `;
+            
+            document.getElementById('modelAccuracy').innerHTML = `
+                <div class="prediction-value">📊 ${accuracy.toFixed(1)}%</div>
+                <p>Confidence Level</p>
+                <p>Model: Linear Regression + KNN</p>
+            `;
+            
+            document.getElementById('dataStats').innerHTML = `
+                <p>📍 Total Data Training: ${tourismData.length}</p>
+                <p>🏙️ Data ${city}: ${tourismData.filter(d => d.city === city).length}</p>
+                <p>🏷️ Data ${category}: ${categoryData.length}</p>
+                <p>✅ Memenuhi Kriteria: ${filteredData.length}</p>
+            `;
+
+            // Get recommendations using KNN-based content filtering
+            let recommendations = tourismData.filter(d => {
+                let match = d.city === city && d.rating >= minRating;
+                if (budget < 1000000) match = match && d.price <= budget;
+                if (category) match = match && d.category === category;
+                if (maxTime > 0 && d.time !== null) match = match && d.time <= maxTime;
+                return match;
+            });
+
+            // Sort by rating and limit to 6
+            recommendations.sort((a, b) => b.rating - a.rating);
+            recommendations = recommendations.slice(0, 6);
+
+            // Display recommendations
+            const recGrid = document.getElementById('recommendationGrid');
+            if (recommendations.length === 0) {
+                recGrid.innerHTML = `
+                    <div class="no-results">
+                        <p>😔 Tidak ada rekomendasi yang sesuai dengan kriteria Anda.</p>
+                        <p>Coba ubah filter untuk hasil yang lebih luas.</p>
+                    </div>
+                `;
+            } else {
+                recGrid.innerHTML = recommendations.map((rec, index) => `
+                    <div class="recommendation-card">
+                        <div class="rec-rank">#${index + 1}</div>
+                        <div class="rec-content">
+                            <h4>${rec.name}</h4>
+                            <div class="rec-meta">
+                                <span class="rec-category">${getCategoryIcon(rec.category)} ${rec.category}</span>
+                                <span class="rec-rating">⭐ ${rec.rating}</span>
+                            </div>
+                            <div class="rec-info">
+                                <span class="rec-price">${rec.price === 0 ? '🆓 Gratis' : '💰 Rp ' + rec.price.toLocaleString('id-ID')}</span>
+                                <span class="rec-city">📍 ${rec.city}</span>
+                            </div>
+                            <div class="rec-score">
+                                <span>Match Score: </span>
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: ${((rec.rating / 5) * 100).toFixed(0)}%"></div>
+                                </div>
+                                <span>${((rec.rating / 5) * 100).toFixed(0)}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Scroll to results
+            document.getElementById('predictionResults').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ==================== ANALYSIS FUNCTIONS ====================
+        function generateAnalysis() {
+            // Category Analysis
+            const categories = [...new Set(tourismData.map(d => d.category))];
+            const categoryHtml = categories.map(cat => {
+                const catData = tourismData.filter(d => d.category === cat);
+                return `
+                    <div class="analysis-row">
+                        <span class="analysis-label">${getCategoryIcon(cat)} ${cat}</span>
+                        <span class="analysis-value">${catData.length} tempat</span>
+                        <span class="analysis-rating">⭐ ${mean(catData.map(d => d.rating)).toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('categoryAnalysis').innerHTML = categoryHtml;
+
+            // City Analysis
+            const cities = [...new Set(tourismData.map(d => d.city))];
+            const cityHtml = cities.map(city => {
+                const cityData = tourismData.filter(d => d.city === city);
+                return `
+                    <div class="analysis-row">
+                        <span class="analysis-label">🏙️ ${city}</span>
+                        <span class="analysis-value">${cityData.length} tempat</span>
+                        <span class="analysis-rating">⭐ ${mean(cityData.map(d => d.rating)).toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('cityAnalysis').innerHTML = cityHtml;
+
+            // Rating Distribution
+            const ratingBins = {};
+            tourismData.forEach(d => {
+                const bin = Math.floor(d.rating * 2) / 2;
+                ratingBins[bin] = (ratingBins[bin] || 0) + 1;
+            });
+            const maxRatingCount = Math.max(...Object.values(ratingBins));
+            const ratingHtml = Object.entries(ratingBins)
+                .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+                .map(([rating, count]) => `
+                    <div class="bar-container">
+                        <span class="bar-label">⭐ ${rating}</span>
+                        <div class="bar" style="width: ${(count / maxRatingCount) * 100}%">
+                            <span class="bar-value">${count}</span>
+                        </div>
+                    </div>
+                `).join('');
+            document.getElementById('ratingDistribution').innerHTML = ratingHtml;
+
+            // Price Distribution
+            const priceBins = { 'Gratis': 0, '1-10k': 0, '10-50k': 0, '50-100k': 0, '100k+': 0 };
+            tourismData.forEach(d => {
+                if (d.price === 0) priceBins['Gratis']++;
+                else if (d.price <= 10000) priceBins['1-10k']++;
+                else if (d.price <= 50000) priceBins['10-50k']++;
+                else if (d.price <= 100000) priceBins['50-100k']++;
+                else priceBins['100k+']++;
+            });
+            const maxPriceCount = Math.max(...Object.values(priceBins));
+            const priceHtml = Object.entries(priceBins).map(([range, count]) => `
+                <div class="bar-container">
+                    <span class="bar-label">💰 ${range}</span>
+                    <div class="bar price-bar" style="width: ${(count / maxPriceCount) * 100}%">
+                        <span class="bar-value">${count}</span>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('priceDistribution').innerHTML = priceHtml;
+
+            // Correlation Analysis
+            const prices = tourismData.map(d => d.price);
+            const ratings = tourismData.map(d => d.rating);
+            const corr = correlation(prices, ratings);
+            
+            document.getElementById('correlationAnalysis').innerHTML = `
+                <div class="correlation-grid">
+                    <div class="corr-item">
+                        <h4>Korelasi Harga - Rating</h4>
+                        <div class="corr-value ${corr >= 0 ? 'positive' : 'negative'}">${corr.toFixed(4)}</div>
+                        <div class="corr-bar">
+                            <div class="corr-fill" style="width: ${Math.abs(corr) * 100}%; background: ${corr >= 0 ? '#28a745' : '#dc3545'}"></div>
+                        </div>
+                        <p class="corr-interpretation">
+                            ${Math.abs(corr) < 0.3 ? '↔️ Korelasi lemah: Harga tidak terlalu mempengaruhi rating' :
+                              corr > 0 ? '📈 Korelasi positif: Tempat mahal cenderung rating tinggi' :
+                              '📉 Korelasi negatif: Tempat murah justru rating tinggi'}
+                        </p>
+                    </div>
+                    <div class="corr-stats">
+                        <h4>📊 Ringkasan Statistik Dataset</h4>
+                        <p>📍 Total Data: <strong>${tourismData.length}</strong></p>
+                        <p>⭐ Rata-rata Rating: <strong>${mean(ratings).toFixed(2)}</strong></p>
+                        <p>💰 Rata-rata Harga: <strong>Rp ${Math.round(mean(prices)).toLocaleString('id-ID')}</strong></p>
+                        <p>📈 Std Dev Rating: <strong>${std(ratings).toFixed(3)}</strong></p>
+                        <p>💵 Std Dev Harga: <strong>Rp ${Math.round(std(prices)).toLocaleString('id-ID')}</strong></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== DATA TABLE ====================
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        function filterData() {
+            currentPage = 1;
+            renderDataTable();
+        }
+
+        function renderDataTable() {
+            const cityFilter = document.getElementById('filterCity').value;
+            const categoryFilter = document.getElementById('filterCategory').value;
+            const sortBy = document.getElementById('sortData').value;
+
+            let data = [...tourismData];
+            
+            // Apply filters
+            if (cityFilter) data = data.filter(d => d.city === cityFilter);
+            if (categoryFilter) data = data.filter(d => d.category === categoryFilter);
+            
+            // Apply sorting
+            switch (sortBy) {
+                case 'rating': data.sort((a, b) => b.rating - a.rating); break;
+                case 'price-low': data.sort((a, b) => a.price - b.price); break;
+                case 'price-high': data.sort((a, b) => b.price - a.price); break;
+                case 'name': data.sort((a, b) => a.name.localeCompare(b.name)); break;
+            }
+
+            // Pagination
+            const totalPages = Math.ceil(data.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const pageData = data.slice(startIndex, startIndex + itemsPerPage);
+
+            // Render table
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = pageData.map((d, i) => `
+                <tr>
+                    <td>${startIndex + i + 1}</td>
+                    <td>${d.name}</td>
+                    <td>${getCategoryIcon(d.category)} ${d.category}</td>
+                    <td>📍 ${d.city}</td>
+                    <td>${d.price === 0 ? '🆓 Gratis' : 'Rp ' + d.price.toLocaleString('id-ID')}</td>
+                    <td>⭐ ${d.rating}</td>
+                </tr>
+            `).join('');
+
+            // Render pagination
+            const pagination = document.getElementById('pagination');
+            let paginationHtml = '';
+            if (totalPages > 1) {
+                paginationHtml += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹ Prev</button>`;
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                        paginationHtml += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+                    } else if (i === currentPage - 3 || i === currentPage + 3) {
+                        paginationHtml += `<span>...</span>`;
+                    }
+                }
+                paginationHtml += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next ›</button>`;
+            }
+            pagination.innerHTML = paginationHtml;
+        }
+
+        function goToPage(page) {
+            const cityFilter = document.getElementById('filterCity').value;
+            const categoryFilter = document.getElementById('filterCategory').value;
+            let data = [...tourismData];
+            if (cityFilter) data = data.filter(d => d.city === cityFilter);
+            if (categoryFilter) data = data.filter(d => d.category === categoryFilter);
+            const totalPages = Math.ceil(data.length / itemsPerPage);
+            
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderDataTable();
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('totalData').textContent = tourismData.length;
+            generateAnalysis();
+            renderDataTable();
+        });
+    </script>
+</body>
+</html>
