@@ -6,11 +6,13 @@ import pandas as pd
 app = Flask(__name__)
 
 # Load model dan data
-with open('kmeans_model.pkl', 'rb') as f:
-    kmeans_model = pickle.load(f)
-
-# Load data untuk referensi
-df = pd.read_csv('tourism_cleaned.csv')
+try:
+    with open('kmeans_model.pkl', 'rb') as f:
+        kmeans_model = pickle.load(f)
+    df = pd.read_csv('tourism_cleaned.csv')
+except:
+    kmeans_model = None
+    df = pd.read_csv('tourism_with_id.csv')
 
 # Cluster descriptions
 cluster_descriptions = {
