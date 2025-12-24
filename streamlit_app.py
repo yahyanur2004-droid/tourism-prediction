@@ -20,8 +20,24 @@ def load_model():
 def load_data():
     return pd.read_csv('tourism_cleaned.csv')
 
+@st.cache_data  
+def load_original_data():
+    return pd.read_csv('tourism_with_id.csv')
+
 kmeans_model = load_model()
 df = load_data()
+df_original = load_original_data()
+
+# Hitung min/max dari data asli untuk normalisasi yang benar
+PRICE_MAX = df_original['Price'].max()  # ~900000
+RATING_MIN = df_original['Rating'].min()  # ~3.4
+RATING_MAX = df_original['Rating'].max()  # ~5.0
+TIME_MIN = df_original['Time_Minutes'].min()  # ~10
+TIME_MAX = df_original['Time_Minutes'].max()  # ~360
+LAT_MIN = df_original['Lat'].min()
+LAT_MAX = df_original['Lat'].max()
+LONG_MIN = df_original['Long'].min()
+LONG_MAX = df_original['Long'].max()
 
 # Cluster descriptions
 cluster_descriptions = {
@@ -50,9 +66,9 @@ col1, col2 = st.columns([1, 1])
 with col1:
     st.header("🎯 Input Data Wisata")
     
-    price = st.number_input("💰 Harga Tiket (Rp)", min_value=0, max_value=900000, value=25000)
-    rating = st.slider("⭐ Rating", min_value=1.0, max_value=5.0, value=4.5, step=0.1)
-    time_minutes = st.slider("⏱️ Waktu Kunjungan (menit)", min_value=10, max_value=360, value=60)
+    price = st.number_input("💰 Harga Tiket (Rp)", min_value=0, max_value=int(PRICE_MAX), value=25000, step=5000)
+    rating = st.slider("⭐ Rating", min_value=float(RATING_MIN), max_value=float(RATING_MAX), value=4.5, step=0.1)
+    time_minutes = st.slider("⏱️ Waktu Kunjungan (menit)", min_value=int(TIME_MIN), max_value=int(TIME_MAX), value=60)
     
     city = st.selectbox("🏙️ Kota", ["Jakarta", "Yogyakarta", "Bandung", "Semarang", "Surabaya"])
     
@@ -66,42 +82,51 @@ with col1:
     }
     lat, long = city_coords[city]
     
-    predict_btn = st.button("🔮 Prediksi Cluster", type="primary", use_container_width=True)
+    st.info(f"📍 Koordinat: Lat {lat}, Long {long}")
 
 with col2:
     st.header("📊 Hasil Prediksi")
     
-    if predict_btn:
-        # Normalize input
-        price_norm = price / 900000
-        rating_norm = (rating - 3.4) / (5.0 - 3.4)
-        time_norm = (time_minutes - 10) / (360 - 10)
-        lat_norm = (lat - (-8.197894)) / (1.078880 - (-8.197894))
-        long_norm = (long - 103.931398) / (112.821662 - 103.931398)
-        
-        # Predict
-        features = np.array([[price_norm, rating_norm, time_norm, lat_norm, long_norm]])
-        cluster = kmeans_model.predict(features)[0]
-        
-        # Display result
-        st.success(f"### Cluster: {cluster}")
-        st.info(cluster_descriptions.get(cluster, "Unknown"))
-        
-        # Similar places
-        st.subheader("🎁 Rekomendasi Wisata Serupa:")
-        similar = df[df['Cluster'] == cluster][['Place_Name', 'Category', 'City', 'Price', 'Rating']].head(5)
-        
-        for _, place in similar.iterrows():
-            with st.container():
-                c1, c2 = st.columns([3, 1])
-                with c1:
-                    st.markdown(f"**{place['Place_Name']}**")
-                    st.caption(f"{place['Category']} • {place['City']} • Rp {place['Price']:,.0f}")
-                with c2:
-                    st.markdown(f"⭐ **{place['Rating']}**")
-                st.divider()
-    else:
-        st.info("👆 Masukkan data dan klik tombol Prediksi")
+    # Prediksi otomatis (tanpa perlu klik tombol)
+    # Normalisasi sesuai dengan cara training model (MinMaxScaler)
+    price_norm = price / PRICE_MAX if PRICE_MAX > 0 else 0
+    rating_norm = (rating - RATING_MIN) / (RATING_MAX - RATING_MIN) if (RATING_MAX - RATING_MIN) > 0 else 0
+    time_norm = (time_minutes - TIME_MIN) / (TIME_MAX - TIME_MIN) if (TIME_MAX - TIME_MIN) > 0 else 0
+    lat_norm = (lat - LAT_MIN) / (LAT_MAX - LAT_MIN) if (LAT_MAX - LAT_MIN) > 0 else 0
+    long_norm = (long - LONG_MIN) / (LONG_MAX - LONG_MIN) if (LONG_MAX - LONG_MIN) > 0 else 0
+    
+    # Predict
+    features = np.array([[price_norm, rating_norm, time_norm, lat_norm, long_norm]])
+    cluster = kmeans_model.predict(features)[0]
+    
+    # Display debug info
+    with st.expander("🔍 Debug - Nilai Normalisasi"):
+        st.write(f"Price: {price} → {price_norm:.4f}")
+        st.write(f"Rating: {rating} → {rating_norm:.4f}")
+        st.write(f"Time: {time_minutes} → {time_norm:.4f}")
+        st.write(f"Lat: {lat} → {lat_norm:.4f}")
+        st.write(f"Long: {long} → {long_norm:.4f}")
+    
+    # Display result
+    st.success(f"### Cluster: {cluster}")
+    st.info(cluster_descriptions.get(cluster, "Unknown"))
+    
+    # Similar places
+    st.subheader("🎁 Rekomendasi Wisata Serupa:")
+    similar = df[df['Cluster'] == cluster][['Place_Name', 'Category', 'City', 'Price', 'Rating']].head(5)
+    
+    for _, place in similar.iterrows():
+        with st.container():
+            c1, c2 = st.columns([3, 1])
+            with c1:
+                st.markdown(f"**{place['Place_Name']}**")
+                # Denormalisasi price untuk tampilan
+                original_price = place['Price'] * PRICE_MAX
+                st.caption(f"{place['Category']} • {place['City']} • Rp {original_price:,.0f}")
+            with c2:
+                original_rating = place['Rating'] * (RATING_MAX - RATING_MIN) + RATING_MIN
+                st.markdown(f"⭐ **{original_rating:.1f}**")
+            st.divider()
 
 # Data Explorer
 st.markdown("---")
